@@ -128,7 +128,7 @@ describe('Router', () => {
           ),
           { ttl: 50, recipient: '0x0000000000000000000000000000000000000004', allowedSlippage: new Percent('1', '100') }
         )
-        expect(result.methodName).toEqual('swapTokensForExactETH')
+        expect(result.methodName).toEqual('swapTokensForExactTRX')
         expect(result.args.slice(0, -1)).toEqual([
           '0x64',
           '0x80',
