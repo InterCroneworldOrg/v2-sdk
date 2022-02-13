@@ -19,22 +19,22 @@ import invariant from 'tiny-invariant'
 import { Pair } from './pair'
 import { Route } from './route'
 
-export function wrappedAmount(currencyAmount:CurrencyAmount, chainId: ChainId): TokenAmount {
-    if (currencyAmount instanceof TokenAmount) {
-        return currencyAmount
-    }
-    if (currencyAmount.currency === ETHER) {
-        return new TokenAmount(WETH[chainId], currencyAmount.raw)
-    }
-    invariant(false, 'CURRENCY')
+export function wrappedAmount(currencyAmount: CurrencyAmount, chainId: ChainId): TokenAmount {
+  if (currencyAmount instanceof TokenAmount) {
+    return currencyAmount
+  }
+  if (currencyAmount.currency === ETHER) {
+    return new TokenAmount(WETH[chainId], currencyAmount.raw)
+  }
+  invariant(false, 'CURRENCY')
 }
 
-export function wrappedCurrency(currency:Currency, chainId: ChainId): Token {
-    if (currency instanceof Token) {
-        return currency;
-    }
-    if(currency === ETHER) return WETH[chainId];
-    invariant(false, 'CURRENCY')
+export function wrappedCurrency(currency: Currency, chainId: ChainId): Token {
+  if (currency instanceof Token) {
+    return currency
+  }
+  if (currency === ETHER) return WETH[chainId]
+  invariant(false, 'CURRENCY')
 }
 
 // minimal interface so the input output comparator may be shared across types
@@ -45,10 +45,7 @@ interface InputOutput {
 
 // comparator function that allows sorting trades by their output amounts, in decreasing order, and then input amounts
 // in increasing order. i.e. the best trades have the most outputs for the least inputs and are sorted first
-export function inputOutputComparator(
-  a: InputOutput,
-  b: InputOutput
-): number {
+export function inputOutputComparator(a: InputOutput, b: InputOutput): number {
   // must have same input and output token for comparison
   invariant(a.inputAmount.currency.equals(b.inputAmount.currency), 'INPUT_CURRENCY')
   invariant(a.outputAmount.currency.equals(b.outputAmount.currency), 'OUTPUT_CURRENCY')
@@ -73,10 +70,7 @@ export function inputOutputComparator(
 }
 
 // extension of the input output comparator that also considers other dimensions of the trade in ranking them
-export function tradeComparator(
-  a: Trade,
-  b: Trade
-) {
+export function tradeComparator(a: Trade, b: Trade) {
   const ioComp = inputOutputComparator(a, b)
   if (ioComp !== 0) {
     return ioComp
@@ -135,10 +129,7 @@ export class Trade {
    * @param route route of the exact in trade
    * @param amountIn the amount being passed in
    */
-  public static exactIn(
-    route: Route,
-    amountIn: CurrencyAmount
-  ): Trade {
+  public static exactIn(route: Route, amountIn: CurrencyAmount): Trade {
     return new Trade(route, amountIn, TradeType.EXACT_INPUT)
   }
 
@@ -147,18 +138,11 @@ export class Trade {
    * @param route route of the exact out trade
    * @param amountOut the amount returned by the trade
    */
-  public static exactOut(
-    route: Route,
-    amountOut: CurrencyAmount
-  ): Trade {
+  public static exactOut(route: Route, amountOut: CurrencyAmount): Trade {
     return new Trade(route, amountOut, TradeType.EXACT_OUTPUT)
   }
 
-  public constructor(
-    route: Route,
-    amount: CurrencyAmount,
-    tradeType: TradeType
-  ) {
+  public constructor(route: Route, amount: CurrencyAmount, tradeType: TradeType) {
     this.route = route
     this.tradeType = tradeType
 
@@ -227,8 +211,7 @@ export class Trade {
     if (this.tradeType === TradeType.EXACT_INPUT) {
       return this.inputAmount
     } else {
-      const slippageAdjustedAmountIn = new Fraction(ONE).add(slippageTolerance).multiply(this.inputAmount.raw)
-        .quotient
+      const slippageAdjustedAmountIn = new Fraction(ONE).add(slippageTolerance).multiply(this.inputAmount.raw).quotient
       return CurrencyAmount.fromRawAmount(this.inputAmount.currency, slippageAdjustedAmountIn)
     }
   }
@@ -260,11 +243,16 @@ export class Trade {
     invariant(pairs.length > 0, 'PAIRS')
     invariant(maxHops > 0, 'MAX_HOPS')
     invariant(currencyAmountIn === nextAmountIn || currentPairs.length > 0, 'INVALID_RECURSION')
-    var chainId = currencyAmountIn instanceof TokenAmount ? currencyAmountIn.token.chainId : currencyOut instanceof TokenAmount ? currencyOut.token.chainId : undefined;
-    invariant(chainId != undefined, 'CHAIN_ID');
+    var chainId =
+      currencyAmountIn instanceof TokenAmount
+        ? currencyAmountIn.token.chainId
+        : currencyOut instanceof TokenAmount
+        ? currencyOut.token.chainId
+        : undefined
+    invariant(chainId != undefined, 'CHAIN_ID')
 
-    const amountIn = wrappedAmount(nextAmountIn, chainId);
-    const tokenOut = wrappedCurrency(currencyOut, chainId);
+    const amountIn = wrappedAmount(nextAmountIn, chainId)
+    const tokenOut = wrappedCurrency(currencyOut, chainId)
     for (let i = 0; i < pairs.length; i++) {
       const pair = pairs[i]
       // pair irrelevant
@@ -356,11 +344,16 @@ export class Trade {
     invariant(pairs.length > 0, 'PAIRS')
     invariant(maxHops > 0, 'MAX_HOPS')
     invariant(currencyAmountOut === nextAmountOut || currentPairs.length > 0, 'INVALID_RECURSION')
-    var chainId = currencyAmountOut instanceof TokenAmount ? currencyAmountOut.token.chainId : currencyIn instanceof Token? currencyIn.chainId : undefined;
-    invariant(chainId != undefined, 'CHAIN_ID');
+    var chainId =
+      currencyAmountOut instanceof TokenAmount
+        ? currencyAmountOut.token.chainId
+        : currencyIn instanceof Token
+        ? currencyIn.chainId
+        : undefined
+    invariant(chainId != undefined, 'CHAIN_ID')
 
-    const amountOut = wrappedAmount(nextAmountOut, chainId);
-    const tokenIn = wrappedCurrency(currencyIn, chainId);
+    const amountOut = wrappedAmount(nextAmountOut, chainId)
+    const tokenIn = wrappedCurrency(currencyIn, chainId)
     for (let i = 0; i < pairs.length; i++) {
       const pair = pairs[i]
       // pair irrelevant

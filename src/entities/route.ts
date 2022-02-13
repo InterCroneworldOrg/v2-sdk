@@ -18,7 +18,11 @@ export class Route {
     )
 
     invariant(input instanceof Token, 'INPUT NOT TOKEN')
-    invariant(input instanceof Token && pairs[0].involvesToken(input) || input === ETHER && pairs[0].involvesToken(WETH[pairs[0].chainId]), 'INPUT')
+    invariant(
+      (input instanceof Token && pairs[0].involvesToken(input)) ||
+        (input === ETHER && pairs[0].involvesToken(WETH[pairs[0].chainId])),
+      'INPUT'
+    )
     const wrappedInput = input.wrapped
     invariant(pairs[0].involvesToken(wrappedInput), 'INPUT')
     invariant(output instanceof Token, 'OUTPUT NOT TOKEN')
