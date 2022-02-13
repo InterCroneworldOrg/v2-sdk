@@ -233,7 +233,7 @@ export class Trade {
   public static bestTradeExactIn(
     pairs: Pair[],
     currencyAmountIn: CurrencyAmount,
-    currencyOut: Token,
+    currencyOut: Currency,
     { maxNumResults = 3, maxHops = 3 }: BestTradeOptions = {},
     // used in recursion.
     currentPairs: Pair[] = [],
@@ -333,12 +333,12 @@ export class Trade {
    */
   public static bestTradeExactOut(
     pairs: Pair[],
-    currencyIn: Token,
-    currencyAmountOut: TokenAmount,
+    currencyIn: Currency,
+    currencyAmountOut: CurrencyAmount,
     { maxNumResults = 3, maxHops = 3 }: BestTradeOptions = {},
     // used in recursion.
     currentPairs: Pair[] = [],
-    nextAmountOut: TokenAmount = currencyAmountOut,
+    nextAmountOut: CurrencyAmount = currencyAmountOut,
     bestTrades: Trade[] = []
   ): Trade[] {
     invariant(pairs.length > 0, 'PAIRS')
