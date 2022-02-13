@@ -7,14 +7,35 @@ import {
   Price,
   sortedInsert,
   TradeType,
-  TokenAmount
+  TokenAmount,
+  ChainId,
+  Currency,
+  ETHER,
+  WETH
 } from '@intercroneswap/sdk-core'
 import { ONE, ZERO } from '../constants'
 import invariant from 'tiny-invariant'
 
 import { Pair } from './pair'
 import { Route } from './route'
-import { wrappedAmount, wrappedCurrency } from 'utils/utils'
+
+export function wrappedAmount(currencyAmount:CurrencyAmount, chainId: ChainId): TokenAmount {
+    if (currencyAmount instanceof TokenAmount) {
+        return currencyAmount
+    }
+    if (currencyAmount.currency === ETHER) {
+        return new TokenAmount(WETH[chainId], currencyAmount.raw)
+    }
+    invariant(false, 'CURRENCY')
+}
+
+export function wrappedCurrency(currency:Currency, chainId: ChainId): Token {
+    if (currency instanceof Token) {
+        return currency;
+    }
+    if(currency === ETHER) return WETH[chainId];
+    invariant(false, 'CURRENCY')
+}
 
 // minimal interface so the input output comparator may be shared across types
 interface InputOutput {
