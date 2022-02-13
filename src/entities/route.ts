@@ -9,7 +9,7 @@ export class Route {
   public readonly input: Currency
   public readonly output: Currency
 
-  public constructor(pairs: Pair[], input: Currency, output: Currency) {
+  public constructor(pairs: Pair[], input: Currency, output?: Currency) {
     invariant(pairs.length > 0, 'PAIRS')
     const chainId: number = pairs[0].chainId
     invariant(
