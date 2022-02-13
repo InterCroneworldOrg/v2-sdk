@@ -174,8 +174,8 @@ export class Trade {
     this.executionPrice = new Price(
       this.inputAmount.currency,
       this.outputAmount.currency,
-      this.inputAmount.quotient,
-      this.outputAmount.quotient
+      this.inputAmount.raw,
+      this.outputAmount.raw
     )
     this.priceImpact = computePriceImpact(route.midPrice, this.inputAmount, this.outputAmount)
   }
@@ -192,7 +192,7 @@ export class Trade {
       const slippageAdjustedAmountOut = new Fraction(ONE)
         .add(slippageTolerance)
         .invert()
-        .multiply(this.outputAmount.quotient).quotient
+        .multiply(this.outputAmount.raw).quotient
       return CurrencyAmount.fromRawAmount(this.outputAmount.currency, slippageAdjustedAmountOut)
     }
   }
@@ -206,7 +206,7 @@ export class Trade {
     if (this.tradeType === TradeType.EXACT_INPUT) {
       return this.inputAmount
     } else {
-      const slippageAdjustedAmountIn = new Fraction(ONE).add(slippageTolerance).multiply(this.inputAmount.quotient)
+      const slippageAdjustedAmountIn = new Fraction(ONE).add(slippageTolerance).multiply(this.inputAmount.raw)
         .quotient
       return CurrencyAmount.fromRawAmount(this.inputAmount.currency, slippageAdjustedAmountIn)
     }
@@ -302,8 +302,8 @@ export class Trade {
     return new Price(
       this.inputAmount.currency,
       this.outputAmount.currency,
-      this.maximumAmountIn(slippageTolerance).quotient,
-      this.minimumAmountOut(slippageTolerance).quotient
+      this.maximumAmountIn(slippageTolerance).raw,
+      this.minimumAmountOut(slippageTolerance).raw
     )
   }
 
