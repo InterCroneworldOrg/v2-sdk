@@ -1,4 +1,4 @@
-import { Token, Currency, CurrencyAmount, Percent, TradeType, validateAndParseAddress } from '@intercroneswap/sdk-core'
+import { Token, CurrencyAmount, Percent, TradeType, validateAndParseAddress, ETHER } from '@intercroneswap/sdk-core'
 import { Trade } from './entities'
 import invariant from 'tiny-invariant'
 
@@ -53,7 +53,7 @@ export interface SwapParameters {
   value: string
 }
 
-function toHex(currencyAmount: CurrencyAmount<Currency>) {
+function toHex(currencyAmount: CurrencyAmount) {
   return `0x${currencyAmount.quotient.toString(16)}`
 }
 
@@ -73,11 +73,11 @@ export abstract class Router {
    * @param options options for the call parameters
    */
   public static swapCallParameters(
-    trade: Trade<Currency, Currency, TradeType>,
+    trade: Trade,
     options: TradeOptions | TradeOptionsDeadline
   ): SwapParameters {
-    const etherIn = trade.inputAmount.currency.isNative
-    const etherOut = trade.outputAmount.currency.isNative
+    const etherIn = trade.inputAmount.currency === ETHER;
+    const etherOut = trade.outputAmount.currency === ETHER;
     // the router does not support both ether in and out
     invariant(!(etherIn && etherOut), 'ETHER_IN_OUT')
     invariant(!('ttl' in options) || options.ttl > 0, 'TTL')

@@ -1245,10 +1245,10 @@
     "@ethersproject/constants" "^5.0.8"
     "@ethersproject/logger" "^5.0.8"
 
-"@intercroneswap/sdk-core@^0.0.1":
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/@intercroneswap/sdk-core/-/sdk-core-0.0.1.tgz#35bcfb31eecd6d5e13f02d5b564a02e32fe742a0"
-  integrity sha512-Gs3nMniT8s7ksRiIUdI2Cmw7jQjC0H4VJKuAnYr8lWpY6Zn/j949jdhOVSYsEO24K4dK/MurUwMfTfobCagh0Q==
+"@intercroneswap/sdk-core@^0.0.3-unstable4":
+  version "0.0.3-unstable4"
+  resolved "https://registry.yarnpkg.com/@intercroneswap/sdk-core/-/sdk-core-0.0.3-unstable4.tgz#c4501554d4ead92f20c542299ba632f02b99f188"
+  integrity sha512-rzSnjVRQlp26sAZV2Sfjq2WMLwXzJaB/kcrkFHPClqSLVY+0I1Q5SqKCwJxErEZBCoRAg2viDpYdAoNw4Un8Ng==
   dependencies:
     "@ethersproject/address" "^5.0.2"
     big.js "^5.2.2"

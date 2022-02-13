@@ -1,15 +1,15 @@
 import invariant from 'tiny-invariant'
-import { Currency, Price, Token } from '@intercroneswap/sdk-core'
+import { Currency, ETHER, Price, Token, WETH } from '@intercroneswap/sdk-core'
 
 import { Pair } from './pair'
 
-export class Route<TInput extends Currency, TOutput extends Currency> {
+export class Route {
   public readonly pairs: Pair[]
   public readonly path: Token[]
-  public readonly input: TInput
-  public readonly output: TOutput
+  public readonly input: Currency
+  public readonly output: Currency
 
-  public constructor(pairs: Pair[], input: TInput, output: TOutput) {
+  public constructor(pairs: Pair[], input: Currency, output: Currency) {
     invariant(pairs.length > 0, 'PAIRS')
     const chainId: number = pairs[0].chainId
     invariant(
@@ -17,8 +17,11 @@ export class Route<TInput extends Currency, TOutput extends Currency> {
       'CHAIN_IDS'
     )
 
+    invariant(input instanceof Token, 'INPUT NOT TOKEN')
+    invariant(input instanceof Token && pairs[0].involvesToken(input) || input === ETHER && pairs[0].involvesToken(WETH[pairs[0].chainId]), 'INPUT')
     const wrappedInput = input.wrapped
     invariant(pairs[0].involvesToken(wrappedInput), 'INPUT')
+    invariant(output instanceof Token, 'OUTPUT NOT TOKEN')
     invariant(typeof output === 'undefined' || pairs[pairs.length - 1].involvesToken(output.wrapped), 'OUTPUT')
 
     const path: Token[] = [wrappedInput]
@@ -35,11 +38,11 @@ export class Route<TInput extends Currency, TOutput extends Currency> {
     this.output = output
   }
 
-  private _midPrice: Price<TInput, TOutput> | null = null
+  private _midPrice: Price | null = null
 
-  public get midPrice(): Price<TInput, TOutput> {
+  public get midPrice(): Price {
     if (this._midPrice !== null) return this._midPrice
-    const prices: Price<Currency, Currency>[] = []
+    const prices: Price[] = []
     for (const [i, pair] of this.pairs.entries()) {
       prices.push(
         this.path[i].equals(pair.token0)

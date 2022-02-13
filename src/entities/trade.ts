@@ -1,31 +1,32 @@
 import {
   computePriceImpact,
   Token,
-  Currency,
   CurrencyAmount,
   Fraction,
   Percent,
   Price,
   sortedInsert,
-  TradeType
+  TradeType,
+  TokenAmount
 } from '@intercroneswap/sdk-core'
 import { ONE, ZERO } from '../constants'
 import invariant from 'tiny-invariant'
 
 import { Pair } from './pair'
 import { Route } from './route'
+import { wrappedAmount, wrappedCurrency } from 'utils/utils'
 
 // minimal interface so the input output comparator may be shared across types
-interface InputOutput<TInput extends Currency, TOutput extends Currency> {
-  readonly inputAmount: CurrencyAmount<TInput>
-  readonly outputAmount: CurrencyAmount<TOutput>
+interface InputOutput {
+  readonly inputAmount: CurrencyAmount
+  readonly outputAmount: CurrencyAmount
 }
 
 // comparator function that allows sorting trades by their output amounts, in decreasing order, and then input amounts
 // in increasing order. i.e. the best trades have the most outputs for the least inputs and are sorted first
-export function inputOutputComparator<TInput extends Currency, TOutput extends Currency>(
-  a: InputOutput<TInput, TOutput>,
-  b: InputOutput<TInput, TOutput>
+export function inputOutputComparator(
+  a: InputOutput,
+  b: InputOutput
 ): number {
   // must have same input and output token for comparison
   invariant(a.inputAmount.currency.equals(b.inputAmount.currency), 'INPUT_CURRENCY')
@@ -51,9 +52,9 @@ export function inputOutputComparator<TInput extends Currency, TOutput extends C
 }
 
 // extension of the input output comparator that also considers other dimensions of the trade in ranking them
-export function tradeComparator<TInput extends Currency, TOutput extends Currency, TTradeType extends TradeType>(
-  a: Trade<TInput, TOutput, TTradeType>,
-  b: Trade<TInput, TOutput, TTradeType>
+export function tradeComparator(
+  a: Trade,
+  b: Trade
 ) {
   const ioComp = inputOutputComparator(a, b)
   if (ioComp !== 0) {
@@ -82,27 +83,27 @@ export interface BestTradeOptions {
  * Represents a trade executed against a list of pairs.
  * Does not account for slippage, i.e. trades that front run this trade and move the price.
  */
-export class Trade<TInput extends Currency, TOutput extends Currency, TTradeType extends TradeType> {
+export class Trade {
   /**
    * The route of the trade, i.e. which pairs the trade goes through and the input/output currencies.
    */
-  public readonly route: Route<TInput, TOutput>
+  public readonly route: Route
   /**
    * The type of the trade, either exact in or exact out.
    */
-  public readonly tradeType: TTradeType
+  public readonly tradeType: TradeType
   /**
    * The input amount for the trade assuming no slippage.
    */
-  public readonly inputAmount: CurrencyAmount<TInput>
+  public readonly inputAmount: CurrencyAmount
   /**
    * The output amount for the trade assuming no slippage.
    */
-  public readonly outputAmount: CurrencyAmount<TOutput>
+  public readonly outputAmount: CurrencyAmount
   /**
    * The price expressed in terms of output amount/input amount.
    */
-  public readonly executionPrice: Price<TInput, TOutput>
+  public readonly executionPrice: Price
   /**
    * The percent difference between the mid price before the trade and the trade execution price.
    */
@@ -113,10 +114,10 @@ export class Trade<TInput extends Currency, TOutput extends Currency, TTradeType
    * @param route route of the exact in trade
    * @param amountIn the amount being passed in
    */
-  public static exactIn<TInput extends Currency, TOutput extends Currency>(
-    route: Route<TInput, TOutput>,
-    amountIn: CurrencyAmount<TInput>
-  ): Trade<TInput, TOutput, TradeType.EXACT_INPUT> {
+  public static exactIn(
+    route: Route,
+    amountIn: CurrencyAmount
+  ): Trade {
     return new Trade(route, amountIn, TradeType.EXACT_INPUT)
   }
 
@@ -125,25 +126,25 @@ export class Trade<TInput extends Currency, TOutput extends Currency, TTradeType
    * @param route route of the exact out trade
    * @param amountOut the amount returned by the trade
    */
-  public static exactOut<TInput extends Currency, TOutput extends Currency>(
-    route: Route<TInput, TOutput>,
-    amountOut: CurrencyAmount<TOutput>
-  ): Trade<TInput, TOutput, TradeType.EXACT_OUTPUT> {
+  public static exactOut(
+    route: Route,
+    amountOut: CurrencyAmount
+  ): Trade {
     return new Trade(route, amountOut, TradeType.EXACT_OUTPUT)
   }
 
   public constructor(
-    route: Route<TInput, TOutput>,
-    amount: TTradeType extends TradeType.EXACT_INPUT ? CurrencyAmount<TInput> : CurrencyAmount<TOutput>,
-    tradeType: TTradeType
+    route: Route,
+    amount: CurrencyAmount,
+    tradeType: TradeType
   ) {
     this.route = route
     this.tradeType = tradeType
 
-    const tokenAmounts: CurrencyAmount<Token>[] = new Array(route.path.length)
+    const tokenAmounts: TokenAmount[] = new Array(route.path.length)
     if (tradeType === TradeType.EXACT_INPUT) {
       invariant(amount.currency.equals(route.input), 'INPUT')
-      tokenAmounts[0] = amount.wrapped
+      tokenAmounts[0] = wrappedAmount(amount, route.chainId)
       for (let i = 0; i < route.path.length - 1; i++) {
         const pair = route.pairs[i]
         const [outputAmount] = pair.getOutputAmount(tokenAmounts[i])
@@ -157,7 +158,7 @@ export class Trade<TInput extends Currency, TOutput extends Currency, TTradeType
       )
     } else {
       invariant(amount.currency.equals(route.output), 'OUTPUT')
-      tokenAmounts[tokenAmounts.length - 1] = amount.wrapped
+      tokenAmounts[tokenAmounts.length - 1] = wrappedAmount(amount, route.chainId)
       for (let i = route.path.length - 1; i > 0; i--) {
         const pair = route.pairs[i - 1]
         const [inputAmount] = pair.getInputAmount(tokenAmounts[i])
@@ -183,7 +184,7 @@ export class Trade<TInput extends Currency, TOutput extends Currency, TTradeType
    * Get the minimum amount that must be received from this trade for the given slippage tolerance
    * @param slippageTolerance tolerance of unfavorable slippage from the execution price of this trade
    */
-  public minimumAmountOut(slippageTolerance: Percent): CurrencyAmount<TOutput> {
+  public minimumAmountOut(slippageTolerance: Percent): CurrencyAmount {
     invariant(!slippageTolerance.lessThan(ZERO), 'SLIPPAGE_TOLERANCE')
     if (this.tradeType === TradeType.EXACT_OUTPUT) {
       return this.outputAmount
@@ -200,7 +201,7 @@ export class Trade<TInput extends Currency, TOutput extends Currency, TTradeType
    * Get the maximum amount in that can be spent via this trade for the given slippage tolerance
    * @param slippageTolerance tolerance of unfavorable slippage from the execution price of this trade
    */
-  public maximumAmountIn(slippageTolerance: Percent): CurrencyAmount<TInput> {
+  public maximumAmountIn(slippageTolerance: Percent): CurrencyAmount {
     invariant(!slippageTolerance.lessThan(ZERO), 'SLIPPAGE_TOLERANCE')
     if (this.tradeType === TradeType.EXACT_INPUT) {
       return this.inputAmount
@@ -225,29 +226,31 @@ export class Trade<TInput extends Currency, TOutput extends Currency, TTradeType
    * @param currencyAmountIn used in recursion; the original value of the currencyAmountIn parameter
    * @param bestTrades used in recursion; the current list of best trades
    */
-  public static bestTradeExactIn<TInput extends Currency, TOutput extends Currency>(
+  public static bestTradeExactIn(
     pairs: Pair[],
-    currencyAmountIn: CurrencyAmount<TInput>,
-    currencyOut: TOutput,
+    currencyAmountIn: CurrencyAmount,
+    currencyOut: Token,
     { maxNumResults = 3, maxHops = 3 }: BestTradeOptions = {},
     // used in recursion.
     currentPairs: Pair[] = [],
-    nextAmountIn: CurrencyAmount<Currency> = currencyAmountIn,
-    bestTrades: Trade<TInput, TOutput, TradeType.EXACT_INPUT>[] = []
-  ): Trade<TInput, TOutput, TradeType.EXACT_INPUT>[] {
+    nextAmountIn: CurrencyAmount = currencyAmountIn,
+    bestTrades: Trade[] = []
+  ): Trade[] {
     invariant(pairs.length > 0, 'PAIRS')
     invariant(maxHops > 0, 'MAX_HOPS')
     invariant(currencyAmountIn === nextAmountIn || currentPairs.length > 0, 'INVALID_RECURSION')
+    var chainId = currencyAmountIn instanceof TokenAmount ? currencyAmountIn.token.chainId : currencyOut instanceof TokenAmount ? currencyOut.token.chainId : undefined;
+    invariant(chainId != undefined, 'CHAIN_ID');
 
-    const amountIn = nextAmountIn.wrapped
-    const tokenOut = currencyOut.wrapped
+    const amountIn = wrappedAmount(nextAmountIn, chainId);
+    const tokenOut = wrappedCurrency(currencyOut, chainId);
     for (let i = 0; i < pairs.length; i++) {
       const pair = pairs[i]
       // pair irrelevant
-      if (!pair.token0.equals(amountIn.currency) && !pair.token1.equals(amountIn.currency)) continue
+      if (!pair.token0.equals(amountIn.token) && !pair.token1.equals(amountIn.token)) continue
       if (pair.reserve0.equalTo(ZERO) || pair.reserve1.equalTo(ZERO)) continue
 
-      let amountOut: CurrencyAmount<Token>
+      let amountOut: TokenAmount
       try {
         ;[amountOut] = pair.getOutputAmount(amountIn)
       } catch (error) {
@@ -295,7 +298,7 @@ export class Trade<TInput extends Currency, TOutput extends Currency, TTradeType
    * Return the execution price after accounting for slippage tolerance
    * @param slippageTolerance the allowed tolerated slippage
    */
-  public worstExecutionPrice(slippageTolerance: Percent): Price<TInput, TOutput> {
+  public worstExecutionPrice(slippageTolerance: Percent): Price {
     return new Price(
       this.inputAmount.currency,
       this.outputAmount.currency,
@@ -319,29 +322,31 @@ export class Trade<TInput extends Currency, TOutput extends Currency, TTradeType
    * @param currencyAmountOut used in recursion; the original value of the currencyAmountOut parameter
    * @param bestTrades used in recursion; the current list of best trades
    */
-  public static bestTradeExactOut<TInput extends Currency, TOutput extends Currency>(
+  public static bestTradeExactOut(
     pairs: Pair[],
-    currencyIn: TInput,
-    currencyAmountOut: CurrencyAmount<TOutput>,
+    currencyIn: Token,
+    currencyAmountOut: TokenAmount,
     { maxNumResults = 3, maxHops = 3 }: BestTradeOptions = {},
     // used in recursion.
     currentPairs: Pair[] = [],
-    nextAmountOut: CurrencyAmount<Currency> = currencyAmountOut,
-    bestTrades: Trade<TInput, TOutput, TradeType.EXACT_OUTPUT>[] = []
-  ): Trade<TInput, TOutput, TradeType.EXACT_OUTPUT>[] {
+    nextAmountOut: TokenAmount = currencyAmountOut,
+    bestTrades: Trade[] = []
+  ): Trade[] {
     invariant(pairs.length > 0, 'PAIRS')
     invariant(maxHops > 0, 'MAX_HOPS')
     invariant(currencyAmountOut === nextAmountOut || currentPairs.length > 0, 'INVALID_RECURSION')
+    var chainId = currencyAmountOut instanceof TokenAmount ? currencyAmountOut.token.chainId : currencyIn instanceof Token? currencyIn.chainId : undefined;
+    invariant(chainId != undefined, 'CHAIN_ID');
 
-    const amountOut = nextAmountOut.wrapped
-    const tokenIn = currencyIn.wrapped
+    const amountOut = wrappedAmount(nextAmountOut, chainId);
+    const tokenIn = wrappedCurrency(currencyIn, chainId);
     for (let i = 0; i < pairs.length; i++) {
       const pair = pairs[i]
       // pair irrelevant
-      if (!pair.token0.equals(amountOut.currency) && !pair.token1.equals(amountOut.currency)) continue
+      if (!pair.token0.equals(amountOut.token) && !pair.token1.equals(amountOut.token)) continue
       if (pair.reserve0.equalTo(ZERO) || pair.reserve1.equalTo(ZERO)) continue
 
-      let amountIn: CurrencyAmount<Token>
+      let amountIn: TokenAmount
       try {
         ;[amountIn] = pair.getInputAmount(amountOut)
       } catch (error) {
