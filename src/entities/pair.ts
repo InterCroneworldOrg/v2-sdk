@@ -31,16 +31,16 @@ export class Pair {
     return computePairAddress({ factoryAddress: FACTORY_ADDRESS, tokenA, tokenB })
   }
 
-  public constructor(tokenAmountA: TokenAmount, tokenAmountB: TokenAmount) {
+  public constructor(tokenAmountA: TokenAmount, tokenAmountB: TokenAmount, pairAddress?: string) {
     const tokenAmounts = tokenAmountA.token.sortsBefore(tokenAmountB.token) // does safety checks
       ? [tokenAmountA, tokenAmountB]
       : [tokenAmountB, tokenAmountA]
     this.liquidityToken = new Token(
       tokenAmounts[0].token.chainId,
-      Pair.getAddress(tokenAmounts[0].token, tokenAmounts[1].token),
+      pairAddress || Pair.getAddress(tokenAmounts[0].token, tokenAmounts[1].token),
       18,
-      'UNI-V2',
-      'InterCroneswap V2'
+      'Iswap LP',
+      'Iswap LP Token'
     )
     this.tokenAmounts = tokenAmounts as [TokenAmount, TokenAmount]
   }
