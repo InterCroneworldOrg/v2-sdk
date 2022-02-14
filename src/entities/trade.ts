@@ -246,8 +246,8 @@ export class Trade {
     var chainId =
       currencyAmountIn instanceof TokenAmount
         ? currencyAmountIn.token.chainId
-        : currencyOut instanceof TokenAmount
-        ? currencyOut.token.chainId
+        : currencyOut instanceof Token
+        ? currencyOut.chainId
         : undefined
     invariant(chainId != undefined, 'CHAIN_ID')
 
