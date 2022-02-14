@@ -23,7 +23,11 @@ export class Route {
       'INPUT'
     )
     const wrappedInput = WETH[pairs[0].chainId]
-    invariant(typeof output === 'undefined' || output instanceof Token && pairs[pairs.length - 1].involvesToken(WETH[pairs[0].chainId]), 'OUTPUT')
+    invariant(
+      typeof output === 'undefined' ||
+        (output instanceof Token && pairs[pairs.length - 1].involvesToken(WETH[pairs[0].chainId])),
+      'OUTPUT'
+    )
 
     const path: Token[] = [input instanceof Token ? input : wrappedInput]
     for (const [i, pair] of pairs.entries()) {
