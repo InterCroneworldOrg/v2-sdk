@@ -17,18 +17,15 @@ export class Route {
       'CHAIN_IDS'
     )
 
-    invariant(input instanceof Token, 'INPUT NOT TOKEN')
     invariant(
       (input instanceof Token && pairs[0].involvesToken(input)) ||
         (input === ETHER && pairs[0].involvesToken(WETH[pairs[0].chainId])),
       'INPUT'
     )
-    const wrappedInput = input.wrapped
-    invariant(pairs[0].involvesToken(wrappedInput), 'INPUT')
-    invariant(output instanceof Token, 'OUTPUT NOT TOKEN')
-    invariant(typeof output === 'undefined' || pairs[pairs.length - 1].involvesToken(output.wrapped), 'OUTPUT')
+    const wrappedInput = WETH[pairs[0].chainId]
+    invariant(typeof output === 'undefined' || output instanceof Token && pairs[pairs.length - 1].involvesToken(WETH[pairs[0].chainId]), 'OUTPUT')
 
-    const path: Token[] = [wrappedInput]
+    const path: Token[] = [input instanceof Token ? input : wrappedInput]
     for (const [i, pair] of pairs.entries()) {
       const currentInput = path[i]
       invariant(currentInput.equals(pair.token0) || currentInput.equals(pair.token1), 'PATH')
@@ -39,7 +36,7 @@ export class Route {
     this.pairs = pairs
     this.path = path
     this.input = input
-    this.output = output
+    this.output = output !== undefined ? output : path[path.length - 1]
   }
 
   private _midPrice: Price | null = null
