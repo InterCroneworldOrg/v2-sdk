@@ -2,10 +2,10 @@ import { ChainId } from '@intercroneswap/sdk-core'
 import JSBI from 'jsbi'
 
 export const FACTORY_ADDRESS = '0xed8185b97e71435f5c37381a8b4d050b5daee972'
-export const FACTORY_ADDRESSES : { [chainId: number]: string} = {
-    [ChainId.MAINNET]: '0xC2301F81D7E05B70AC94207D4E5B7CB07C845568',
-    [ChainId.NILE]: '0xed8185b97e71435f5c37381a8b4d050b5daee972',
-    [ChainId.SHASTA]: '0xed8185b97e71435f5c37381a8b4d050b5daee972',
+export const FACTORY_ADDRESSES: { [chainId: number]: string } = {
+  [ChainId.MAINNET]: '0xC2301F81D7E05B70AC94207D4E5B7CB07C845568',
+  [ChainId.NILE]: '0xed8185b97e71435f5c37381a8b4d050b5daee972',
+  [ChainId.SHASTA]: '0xed8185b97e71435f5c37381a8b4d050b5daee972'
 }
 export const INIT_CODE_HASH = '0xecf3ad9b15e86f3ebbd9cb0ef01ca73f48a403eb2e294faa6057b1a364723bc5'
 

@@ -2,20 +2,24 @@ import { BigintIsh, Price, sqrt, Token, TokenAmount, ChainId } from '@intercrone
 import invariant from 'tiny-invariant'
 import JSBI from 'jsbi'
 import { pack, keccak256 } from '@ethersproject/solidity'
-import { abi as ISwapFactoryABI } from "@intercroneswap/v2-periphery/build/IIswapV1Factory.json";
+import { abi as ISwapFactoryABI } from '@intercroneswap/v2-periphery/build/IIswapV1Factory.json'
 import { getCreate2Address } from '@ethersproject/address'
-import { Provider } from "@ethersproject/providers";
-import { Contract } from "@ethersproject/contracts";
-import { FACTORY_ADDRESS, INIT_CODE_HASH, MINIMUM_LIQUIDITY, FIVE, _997, _1000, ONE, ZERO, FACTORY_ADDRESSES } from '../constants'
+import { Provider } from '@ethersproject/providers'
+import { Contract } from '@ethersproject/contracts'
+import {
+  FACTORY_ADDRESS,
+  INIT_CODE_HASH,
+  MINIMUM_LIQUIDITY,
+  FIVE,
+  _997,
+  _1000,
+  ONE,
+  ZERO,
+  FACTORY_ADDRESSES
+} from '../constants'
 import { InsufficientReservesError, InsufficientInputAmountError } from '../errors'
 
-export const getFactoryContract = ({
-  chainId,
-  provider
-}: {
-  chainId: ChainId
-  provider: Provider
-}): Contract => {
+export const getFactoryContract = ({ chainId, provider }: { chainId: ChainId; provider: Provider }): Contract => {
   return new Contract(FACTORY_ADDRESSES[chainId], ISwapFactoryABI, provider)
 }
 
@@ -45,13 +49,12 @@ export class Pair {
 
   public static async getAddressAsync(tokenA: Token, tokenB: Token, provider: Provider): Promise<string> {
     try {
-      var { chainId } = tokenA;
-      var contract = getFactoryContract( { chainId, provider } );
+      var { chainId } = tokenA
+      var contract = getFactoryContract({ chainId, provider })
       return contract.getPair(tokenA.address, tokenB.address)
     } catch (error) {
-      throw error 
+      throw error
     }
-    
   }
 
   public constructor(tokenAmountA: TokenAmount, tokenAmountB: TokenAmount, pairAddress?: string) {
