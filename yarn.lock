@@ -1452,10 +1452,10 @@
     "@ethersproject/properties" "^5.5.0"
     "@ethersproject/strings" "^5.5.0"
 
-"@intercroneswap/sdk-core@^0.0.3-unstable6":
-  "integrity" "sha512-dJAhsdcNeid/CVbNv1asCLVyNFNoqip9VraFyiEn+1DzR/cQSwJ6msBotHgqpKTW7CzjSrcOSpGRkGzKA1g6Ag=="
-  "resolved" "https://registry.npmjs.org/@intercroneswap/sdk-core/-/sdk-core-0.0.3-unstable6.tgz"
-  "version" "0.0.3-unstable6"
+"@intercroneswap/sdk-core@^0.0.3-unstable8":
+  "integrity" "sha512-fc69nVCtNdt1byZC0Ud7CouU0N9oBkTuYrlj7spE+b31AfNGr7nKaElhH9evUg61IliZT+SSIWqUU8jd35H+MA=="
+  "resolved" "https://registry.npmjs.org/@intercroneswap/sdk-core/-/sdk-core-0.0.3-unstable8.tgz"
+  "version" "0.0.3-unstable8"
   dependencies:
     "@ethersproject/address" "^5.0.2"
     "big.js" "^5.2.2"
