@@ -64,7 +64,7 @@ export class Pair {
     this.liquidityToken = new Token(
       tokenAmounts[0].token.chainId,
       pairAddress || Pair.getAddress(tokenAmounts[0].token, tokenAmounts[1].token),
-      18,
+      8,
       'Iswap LP',
       'Iswap LP Token'
     )
@@ -138,12 +138,12 @@ export class Pair {
       throw new InsufficientReservesError()
     }
     const inputReserve = this.reserveOf(inputAmount.token)
-    const outputReserve = this.reserveOf(inputAmount.currency.equals(this.token0) ? this.token1 : this.token0)
+    const outputReserve = this.reserveOf(inputAmount.token.equals(this.token0) ? this.token1 : this.token0)
     const inputAmountWithFee = JSBI.multiply(inputAmount.raw, _997)
     const numerator = JSBI.multiply(inputAmountWithFee, outputReserve.raw)
     const denominator = JSBI.add(JSBI.multiply(inputReserve.raw, _1000), inputAmountWithFee)
     const outputAmount = TokenAmount.fromRawAmount(
-      inputAmount.currency.equals(this.token0) ? this.token1 : this.token0,
+      inputAmount.token.equals(this.token0) ? this.token1 : this.token0,
       JSBI.divide(numerator, denominator)
     )
     if (JSBI.equal(outputAmount.raw, ZERO)) {
@@ -163,11 +163,11 @@ export class Pair {
     }
 
     const outputReserve = this.reserveOf(outputAmount.token)
-    const inputReserve = this.reserveOf(outputAmount.currency.equals(this.token0) ? this.token1 : this.token0)
+    const inputReserve = this.reserveOf(outputAmount.token.equals(this.token0) ? this.token1 : this.token0)
     const numerator = JSBI.multiply(JSBI.multiply(inputReserve.raw, outputAmount.raw), _1000)
     const denominator = JSBI.multiply(JSBI.subtract(outputReserve.raw, outputAmount.raw), _997)
     const inputAmount = TokenAmount.fromRawAmount(
-      outputAmount.currency.equals(this.token0) ? this.token1 : this.token0,
+      outputAmount.token.equals(this.token0) ? this.token1 : this.token0,
       JSBI.add(JSBI.divide(numerator, denominator), ONE)
     )
     return [inputAmount, new Pair(inputReserve.add(inputAmount), outputReserve.subtract(outputAmount))]
@@ -178,11 +178,11 @@ export class Pair {
     tokenAmountA: TokenAmount,
     tokenAmountB: TokenAmount
   ): TokenAmount {
-    invariant(totalSupply.currency.equals(this.liquidityToken), 'LIQUIDITY')
+    invariant(totalSupply.token.equals(this.liquidityToken), 'LIQUIDITY')
     const tokenAmounts = tokenAmountA.token.sortsBefore(tokenAmountB.token) // does safety checks
       ? [tokenAmountA, tokenAmountB]
       : [tokenAmountB, tokenAmountA]
-    invariant(tokenAmounts[0].currency.equals(this.token0) && tokenAmounts[1].token.equals(this.token1), 'TOKEN')
+    invariant(tokenAmounts[0].token.equals(this.token0) && tokenAmounts[1].token.equals(this.token1), 'TOKEN')
 
     let liquidity: JSBI
     if (JSBI.equal(totalSupply.raw, ZERO)) {
@@ -206,8 +206,8 @@ export class Pair {
     kLast?: BigintIsh
   ): TokenAmount {
     invariant(this.involvesToken(token), 'TOKEN')
-    invariant(totalSupply.currency.equals(this.liquidityToken), 'TOTAL_SUPPLY')
-    invariant(liquidity.currency.equals(this.liquidityToken), 'LIQUIDITY')
+    invariant(totalSupply.token.equals(this.liquidityToken), 'TOTAL_SUPPLY')
+    invariant(liquidity.token.equals(this.liquidityToken), 'LIQUIDITY')
     invariant(JSBI.lessThanOrEqual(liquidity.raw, totalSupply.raw), 'LIQUIDITY')
 
     let totalSupplyAdjusted: TokenAmount
