@@ -1,8 +1,13 @@
+import { ChainId } from '@intercroneswap/sdk-core'
 import JSBI from 'jsbi'
 
-export const FACTORY_ADDRESS = '0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f'
-
-export const INIT_CODE_HASH = '0x96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f'
+export const FACTORY_ADDRESS = '0xed8185b97e71435f5c37381a8b4d050b5daee972'
+export const FACTORY_ADDRESSES: { [chainId: number]: string } = {
+  [ChainId.MAINNET]: '0xC2301F81D7E05B70AC94207D4E5B7CB07C845568',
+  [ChainId.NILE]: '0xed8185b97e71435f5c37381a8b4d050b5daee972',
+  [ChainId.SHASTA]: '0xed8185b97e71435f5c37381a8b4d050b5daee972'
+}
+export const INIT_CODE_HASH = '0xecf3ad9b15e86f3ebbd9cb0ef01ca73f48a403eb2e294faa6057b1a364723bc5'
 
 export const MINIMUM_LIQUIDITY = JSBI.BigInt(1000)
 
