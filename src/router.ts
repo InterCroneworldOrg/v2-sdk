@@ -1,6 +1,7 @@
-import { Token, CurrencyAmount, Percent, TradeType, validateAndParseAddress, ETHER } from '@intercroneswap/sdk-core'
-import { Trade } from './entities'
+import { CurrencyAmount, ETHER, Percent, Token, Trade } from './entities'
 import invariant from 'tiny-invariant'
+import { TradeType } from '.'
+import { validateAndParseAddress } from 'utils'
 
 /**
  * Options for producing the arguments to send call to the router.
@@ -90,9 +91,9 @@ export abstract class Router {
 
     const useFeeOnTransfer = Boolean(options.feeOnTransfer)
 
-    let methodName: string
-    let args: (string | string[])[]
-    let value: string
+    let methodName: string = ''
+    let args: (string | string[])[] = []
+    let value: string = ''
     switch (trade.tradeType) {
       case TradeType.EXACT_INPUT:
         if (etherIn) {

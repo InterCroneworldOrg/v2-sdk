@@ -1,5 +1,5 @@
 import invariant from 'tiny-invariant'
-import { Currency, ETHER, Price, Token, WETH } from '@intercroneswap/sdk-core'
+import { Token, Currency, ETHER, WETH, Price } from 'entities'
 
 import { Pair } from './pair'
 

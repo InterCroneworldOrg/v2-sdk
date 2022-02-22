@@ -1,4 +1,3 @@
-import { BigintIsh, Price, sqrt, Token, TokenAmount, ChainId } from '@intercroneswap/sdk-core'
 import invariant from 'tiny-invariant'
 import JSBI from 'jsbi'
 import { pack, keccak256 } from '@ethersproject/solidity'
@@ -15,9 +14,13 @@ import {
   _1000,
   ONE,
   ZERO,
-  FACTORY_ADDRESSES
+  FACTORY_ADDRESSES,
+  BigintIsh,
+  ChainId
 } from '../constants'
-import { InsufficientReservesError, InsufficientInputAmountError } from '../errors'
+import { sqrt } from 'utils'
+import { InsufficientReservesError, InsufficientInputAmountError } from 'errors'
+import { Token, TokenAmount, Price } from 'entities'
 
 export const getFactoryContract = ({ chainId, provider }: { chainId: ChainId; provider: Provider }): Contract => {
   return new Contract(FACTORY_ADDRESSES[chainId], ISwapFactoryABI, provider)
