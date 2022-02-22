@@ -1,5 +1,5 @@
-import { Token } from '.'
-import { ChainId } from '..'
+import { Token } from 'entities'
+import { ChainId } from '../constants'
 
 export const WETH: { [chainId: number]: Token } = {
   [ChainId.MAINNET]: new Token(ChainId.MAINNET, '0x891CDB91D149F23B1A45D9C5CA78A88D0CB44C18', 6, 'WTRX', 'Wrapped TRX'),

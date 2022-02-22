@@ -3,19 +3,8 @@ import invariant from 'tiny-invariant'
 
 import { Pair } from './pair'
 import { Route } from './route'
-import {
-  CurrencyAmount,
-  TokenAmount,
-  ETHER,
-  WETH,
-  Currency,
-  Token,
-  Price,
-  Percent,
-  computePriceImpact,
-  Fraction,
-  sortedInsert
-} from '..'
+import { CurrencyAmount, TokenAmount, ETHER, WETH, Currency, Token, Price, Percent, Fraction } from 'entities'
+import { computePriceImpact, sortedInsert } from 'utils'
 
 export function wrappedAmount(currencyAmount: CurrencyAmount, chainId: ChainId): TokenAmount {
   if (currencyAmount instanceof TokenAmount) {

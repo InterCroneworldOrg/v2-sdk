@@ -1,5 +1,5 @@
 import invariant from 'tiny-invariant'
-import { Token, Currency, ETHER, WETH, Price } from '..'
+import { Token, Currency, ETHER, WETH, Price } from 'entities'
 
 import { Pair } from './pair'
 

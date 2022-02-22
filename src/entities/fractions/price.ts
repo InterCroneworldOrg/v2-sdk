@@ -5,8 +5,8 @@ import { BigintIsh, Rounding } from '../../constants'
 import { Currency } from '../currency'
 import { Fraction } from './fraction'
 import { CurrencyAmount } from './currencyAmount'
-import { Token } from '..'
-import { TokenAmount } from '.'
+import { Token } from '../token'
+import { TokenAmount } from './tokenAmount'
 
 export class Price extends Fraction {
   public readonly baseCurrency: Currency // input i.e. denominator
