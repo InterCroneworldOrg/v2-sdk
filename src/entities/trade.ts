@@ -1,23 +1,21 @@
-import {
-  computePriceImpact,
-  Token,
-  CurrencyAmount,
-  Fraction,
-  Percent,
-  Price,
-  sortedInsert,
-  TradeType,
-  TokenAmount,
-  ChainId,
-  Currency,
-  ETHER,
-  WETH
-} from '@intercroneswap/sdk-core'
-import { ONE, ZERO } from '../constants'
+import { ChainId, ONE, TradeType, ZERO } from '../constants'
 import invariant from 'tiny-invariant'
 
 import { Pair } from './pair'
 import { Route } from './route'
+import {
+  CurrencyAmount,
+  TokenAmount,
+  ETHER,
+  WETH,
+  Currency,
+  Token,
+  Price,
+  Percent,
+  computePriceImpact,
+  Fraction,
+  sortedInsert
+} from '..'
 
 export function wrappedAmount(currencyAmount: CurrencyAmount, chainId: ChainId): TokenAmount {
   if (currencyAmount instanceof TokenAmount) {

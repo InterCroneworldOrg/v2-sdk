@@ -2,7 +2,7 @@ import { Pair } from './pair'
 import { Route } from './route'
 import { Trade } from './trade'
 import JSBI from 'jsbi'
-import { Ether, CurrencyAmount, Percent, Token, TradeType, WETH9, Price } from '@intercroneswap/sdk-core'
+import { Token, CurrencyAmount, WETH9, TradeType, Percent, Price } from '..'
 
 describe('Trade', () => {
   const ETHER = Ether.onChain(1)

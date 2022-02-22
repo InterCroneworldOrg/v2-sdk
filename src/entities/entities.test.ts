@@ -1,7 +1,6 @@
 import JSBI from 'jsbi'
 import invariant from 'tiny-invariant'
-import { WETH9 as _WETH9, TradeType, Token, CurrencyAmount } from '@intercroneswap/sdk-core'
-import { Pair, Route, Trade } from '../index'
+import { CurrencyAmount, Pair, Route, Token, Trade, TradeType } from '../index'
 
 const ADDRESSES = [
   '0x0000000000000000000000000000000000000001',

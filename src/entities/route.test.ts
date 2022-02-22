@@ -1,5 +1,4 @@
-import { ETHER, Token, WETH9, TokenAmount } from '@intercroneswap/sdk-core'
-import { Pair, Route } from './index'
+import { ETHER, Pair, Route, Token, TokenAmount, WETH9 } from './index'
 
 describe('Route', () => {
   const token0 = new Token(1, '0x0000000000000000000000000000000000000001', 18, 't0')

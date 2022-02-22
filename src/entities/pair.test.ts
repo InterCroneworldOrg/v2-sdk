@@ -1,4 +1,4 @@
-import { Token, WETH9, Price, CurrencyAmount } from '@intercroneswap/sdk-core'
+import { Token, CurrencyAmount, WETH9, Price } from '..'
 import { InsufficientInputAmountError } from '../errors'
 import { computePairAddress, Pair } from './pair'
 
