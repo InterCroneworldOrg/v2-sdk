@@ -18,9 +18,11 @@ import {
   BigintIsh,
   ChainId
 } from '../constants'
-import { sqrt } from 'utils'
-import { Token, TokenAmount, Price } from 'entities'
-import { InsufficientInputAmountError, InsufficientReservesError } from '..'
+import { Token } from './token'
+import { Price } from './fractions/price'
+import { TokenAmount } from './fractions/tokenAmount'
+import { sqrt } from '../utils/sqrt'
+import { InsufficientInputAmountError, InsufficientReservesError } from '../errors'
 
 export const getFactoryContract = ({ chainId, provider }: { chainId: ChainId; provider: Provider }): Contract => {
   return new Contract(FACTORY_ADDRESSES[chainId], ISwapFactoryABI, provider)
@@ -67,7 +69,7 @@ export class Pair {
     this.liquidityToken = new Token(
       tokenAmounts[0].token.chainId,
       pairAddress || Pair.getAddress(tokenAmounts[0].token, tokenAmounts[1].token),
-      18,
+      8,
       'Iswap LP',
       'Iswap LP Token'
     )

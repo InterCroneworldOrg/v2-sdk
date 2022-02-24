@@ -1,5 +1,5 @@
 import invariant from 'tiny-invariant'
-import { ChainId } from '..'
+import { ChainId } from '../constants'
 import { validateAndParseAddress } from '../utils/validateAndParseAddress'
 import { Currency } from './currency'
 
@@ -35,6 +35,7 @@ export class Token extends Currency {
     if (this === other) {
       return true
     }
+    console.log(this, other, 'tokens')
     return this.chainId === other.chainId && this.address === other.address
   }
 

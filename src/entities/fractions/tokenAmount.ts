@@ -1,6 +1,7 @@
 import JSBI from 'jsbi'
 import invariant from 'tiny-invariant'
-import { CurrencyAmount, Fraction } from '.'
+import { Fraction } from './fraction'
+import { CurrencyAmount } from './currencyAmount'
 import { Token } from '../token'
 import { BigintIsh } from '../../constants'
 

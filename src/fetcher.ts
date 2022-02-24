@@ -6,7 +6,7 @@ import { Contract } from '@ethersproject/contracts'
 import { abi as IERC } from '@intercroneswap/v2-periphery/build/IERC20.json'
 import { abi as ISwapPair } from '@intercroneswap/v2-periphery/build/IIswapV1Pair.json'
 import invariant from 'tiny-invariant'
-import { TokenAmount } from '.'
+import { TokenAmount } from './entities/fractions/tokenAmount'
 
 export var TOKEN_DECIMALS_CACHE: { [chainId: number]: { [tokenAddress: string]: number } } = {
   [ChainId.MAINNET]: {},

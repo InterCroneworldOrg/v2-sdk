@@ -1,7 +1,7 @@
 import { CurrencyAmount, ETHER, Percent, Token, Trade } from './entities'
 import invariant from 'tiny-invariant'
-import { TradeType } from '.'
-import { validateAndParseAddress } from 'utils'
+import { validateAndParseAddress } from './utils'
+import { TradeType } from './constants'
 
 /**
  * Options for producing the arguments to send call to the router.

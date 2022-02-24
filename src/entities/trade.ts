@@ -3,8 +3,16 @@ import invariant from 'tiny-invariant'
 
 import { Pair } from './pair'
 import { Route } from './route'
-import { CurrencyAmount, TokenAmount, ETHER, WETH, Currency, Token, Price, Percent, Fraction } from 'entities'
-import { computePriceImpact, sortedInsert } from 'utils'
+import { CurrencyAmount } from './fractions/currencyAmount'
+import { TokenAmount } from './fractions/tokenAmount'
+import { Fraction } from './fractions/fraction'
+import { Price } from './fractions/price'
+import { Percent } from './fractions/percent'
+import { WETH } from './weth'
+import { ETHER, Currency } from './currency'
+import { Token } from './token'
+import { computePriceImpact } from '../utils/computePriceImpact'
+import { sortedInsert } from '../utils/sortedInsert'
 
 export function wrappedAmount(currencyAmount: CurrencyAmount, chainId: ChainId): TokenAmount {
   if (currencyAmount instanceof TokenAmount) {
@@ -257,7 +265,7 @@ export class Trade {
         throw error
       }
       // we have arrived at the output token, so this is the final trade of one of the paths
-      if (amountOut.currency.equals(tokenOut)) {
+      if (amountOut.token.equals(tokenOut)) {
         sortedInsert(
           bestTrades,
           new Trade(
