@@ -1,14 +1,27 @@
 import { Pair } from './entities/pair'
 import { ChainId } from './constants'
 import { Token } from './entities/token'
+import { BaseProvider, getDefaultProvider, getNetwork } from '@ethersproject/providers'
+import { Contract } from '@ethersproject/contracts'
+import { abi as IERC } from '@intercroneswap/v2-periphery/build/IERC20.json'
+import { abi as ISwapPair } from '@intercroneswap/v2-periphery/build/IIswapV1Pair.json'
+import invariant from 'tiny-invariant'
+import { TokenAmount } from '.'
+
+export var TOKEN_DECIMALS_CACHE: { [chainId: number]: { [tokenAddress: string]: number } } = {
+  [ChainId.MAINNET]: {},
+  [ChainId.NILE]: {},
+  [ChainId.SHASTA]: {}
+}
+
 /**
  * Contains methods for constructing instances of pairs and tokens from on-chain data.
  */
-export declare abstract class Fetcher {
+export abstract class Fetcher {
   /**
    * Cannot be constructed.
    */
-  private constructor()
+  private constructor() {}
   /**
    * Fetch information for a given token on the given chain, using the given ethers provider.
    * @param chainId chain of the token
@@ -17,22 +30,48 @@ export declare abstract class Fetcher {
    * @param symbol optional symbol of the token
    * @param name optional name of the token
    */
-  static fetchTokenData(
+  static async fetchTokenData(
     chainId: ChainId,
     address: string,
-    provider?: import('@ethersproject/providers').BaseProvider,
+    provider?: BaseProvider,
     symbol?: string,
     name?: string
-  ): Promise<Token>
+  ): Promise<Token> {
+    try {
+      if (TOKEN_DECIMALS_CACHE[chainId][address] !== null) {
+        return new Token(chainId, address, TOKEN_DECIMALS_CACHE[chainId][address], symbol, name)
+      }
+      if (provider === undefined) {
+        provider = getDefaultProvider(getNetwork(chainId))
+      }
+      const contract = new Contract(address, IERC, provider)
+      const decimals = contract.decimals()
+      TOKEN_DECIMALS_CACHE[chainId][address] = decimals
+
+      return new Token(chainId, address, decimals, symbol, name)
+    } catch (error) {
+      throw error
+    }
+  }
   /**
    * Fetches information about a pair and constructs a pair from the given two tokens.
    * @param tokenA first token
    * @param tokenB second token
    * @param provider the provider to use to fetch the data
    */
-  static fetchPairData(
-    tokenA: Token,
-    tokenB: Token,
-    provider?: import('@ethersproject/providers').BaseProvider
-  ): Promise<Pair>
+  static async fetchPairData(tokenA: Token, tokenB: Token, provider?: BaseProvider): Promise<Pair> {
+    try {
+      if (provider === undefined) {
+        provider = getDefaultProvider(getNetwork(tokenA.chainId))
+      }
+      invariant(tokenA.chainId != tokenB.chainId, 'CHAIN_ID')
+      var address = Pair.getAddress(tokenA, tokenB)
+      const contract = new Contract(address, ISwapPair, provider)
+      const reserves = contract.getReserves()
+      const balances = tokenA.sortsBefore(tokenB) ? [reserves[0], reserves[1]] : [reserves[1], reserves[0]]
+      return new Pair(TokenAmount.fromRawAmount(tokenA, balances[0]), TokenAmount.fromRawAmount(tokenB, balances[1]))
+    } catch (error) {
+      throw error
+    }
+  }
 }

@@ -19,8 +19,8 @@ import {
   ChainId
 } from '../constants'
 import { sqrt } from 'utils'
-import { InsufficientReservesError, InsufficientInputAmountError } from 'errors'
 import { Token, TokenAmount, Price } from 'entities'
+import { InsufficientInputAmountError, InsufficientReservesError } from '..'
 
 export const getFactoryContract = ({ chainId, provider }: { chainId: ChainId; provider: Provider }): Contract => {
   return new Contract(FACTORY_ADDRESSES[chainId], ISwapFactoryABI, provider)
