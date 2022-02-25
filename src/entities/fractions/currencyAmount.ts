@@ -59,22 +59,12 @@ export class CurrencyAmount extends Fraction {
     return CurrencyAmount.fromFractionalAmount(this.currency, subtracted.numerator, subtracted.denominator)
   }
 
-  public multiply(other: Fraction | BigintIsh): CurrencyAmount {
-    const multiplied = super.multiply(other)
-    return CurrencyAmount.fromFractionalAmount(this.currency, multiplied.numerator, multiplied.denominator)
-  }
-
-  public divide(other: Fraction | BigintIsh): CurrencyAmount {
-    const divided = super.divide(other)
-    return CurrencyAmount.fromFractionalAmount(this.currency, divided.numerator, divided.denominator)
-  }
-
   public toSignificant(
     significantDigits: number = 6,
     format?: object,
     rounding: Rounding = Rounding.ROUND_DOWN
   ): string {
-    return super.divide(this.decimalScale).toSignificant(significantDigits, format, rounding)
+    return super.toSignificant(significantDigits, format, rounding)
   }
 
   public toFixed(
@@ -83,7 +73,7 @@ export class CurrencyAmount extends Fraction {
     rounding: Rounding = Rounding.ROUND_DOWN
   ): string {
     invariant(decimalPlaces <= this.currency.decimals, 'DECIMALS')
-    return super.divide(this.decimalScale).toFixed(decimalPlaces, format, rounding)
+    return super.toFixed(decimalPlaces, format, rounding)
   }
 
   public toExact(format: object = { groupSeparator: '' }): string {

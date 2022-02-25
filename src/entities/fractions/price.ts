@@ -7,11 +7,24 @@ import { Fraction } from './fraction'
 import { CurrencyAmount } from './currencyAmount'
 import { Token } from '../token'
 import { TokenAmount } from './tokenAmount'
+import { Route } from '../route'
 
 export class Price extends Fraction {
   public readonly baseCurrency: Currency // input i.e. denominator
   public readonly quoteCurrency: Currency // output i.e. numerator
   public readonly scalar: Fraction // used to adjust the raw fraction w/r/t the decimals of the {base,quote}Token
+
+  public static fromRoute(route: Route): Price {
+    const prices: Price[] = []
+    for (const [i, pair] of route.pairs.entries()) {
+      prices.push(
+        route.path[i].equals(pair.token0)
+          ? new Price(pair.reserve0.currency, pair.reserve1.currency, pair.reserve0.raw, pair.reserve1.raw)
+          : new Price(pair.reserve1.currency, pair.reserve0.currency, pair.reserve1.raw, pair.reserve0.raw)
+      )
+    }
+    return prices.slice(1).reduce((accumulator, currentValue) => accumulator.multiply(currentValue), prices[0])
+  }
 
   public constructor(baseCurrency: Currency, quoteCurrency: Currency, denominator: BigintIsh, numerator: BigintIsh) {
     super(numerator, denominator)

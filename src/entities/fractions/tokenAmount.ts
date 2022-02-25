@@ -1,6 +1,5 @@
 import JSBI from 'jsbi'
 import invariant from 'tiny-invariant'
-import { Fraction } from './fraction'
 import { CurrencyAmount } from './currencyAmount'
 import { Token } from '../token'
 import { BigintIsh, TEN } from '../../constants'
@@ -21,16 +20,6 @@ export class TokenAmount extends CurrencyAmount {
   public subtract(other: TokenAmount): TokenAmount {
     invariant(this.token.equals(other.token), 'TOKEN')
     return new TokenAmount(this.token, JSBI.subtract(this.raw, other.raw))
-  }
-
-  public multiply(other: Fraction | BigintIsh): TokenAmount {
-    const multiplied = super.multiply(other)
-    return TokenAmount.fromFractionalAmount(this.token, multiplied.numerator, multiplied.denominator)
-  }
-
-  public divide(other: Fraction | BigintIsh): TokenAmount {
-    const divided = super.divide(other)
-    return TokenAmount.fromFractionalAmount(this.token, divided.numerator, divided.denominator)
   }
 
   /**
