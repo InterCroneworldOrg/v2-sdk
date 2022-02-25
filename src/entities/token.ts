@@ -35,7 +35,6 @@ export class Token extends Currency {
     if (this === other) {
       return true
     }
-    console.log(this, other, 'tokens')
     return this.chainId === other.chainId && this.address === other.address
   }
 

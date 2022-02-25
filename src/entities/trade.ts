@@ -19,7 +19,7 @@ export function wrappedAmount(currencyAmount: CurrencyAmount, chainId: ChainId):
     return currencyAmount
   }
   if (currencyAmount.currency === ETHER) {
-    return new TokenAmount(WETH[chainId], currencyAmount.raw)
+    return TokenAmount.fromRawAmount(WETH[chainId], currencyAmount.raw)
   }
   invariant(false, 'CURRENCY')
 }
@@ -138,9 +138,6 @@ export class Trade {
   }
 
   public constructor(route: Route, amount: CurrencyAmount, tradeType: TradeType) {
-    this.route = route
-    this.tradeType = tradeType
-
     const tokenAmounts: TokenAmount[] = new Array(route.path.length)
     if (tradeType === TradeType.EXACT_INPUT) {
       invariant(amount.currency.equals(route.input), 'INPUT')
@@ -150,12 +147,6 @@ export class Trade {
         const [outputAmount] = pair.getOutputAmount(tokenAmounts[i])
         tokenAmounts[i + 1] = outputAmount
       }
-      this.inputAmount = CurrencyAmount.fromFractionalAmount(route.input, amount.numerator, amount.denominator)
-      this.outputAmount = CurrencyAmount.fromFractionalAmount(
-        route.output,
-        tokenAmounts[tokenAmounts.length - 1].numerator,
-        tokenAmounts[tokenAmounts.length - 1].denominator
-      )
     } else {
       invariant(amount.currency.equals(route.output), 'OUTPUT')
       tokenAmounts[tokenAmounts.length - 1] = wrappedAmount(amount, route.chainId)
@@ -164,13 +155,21 @@ export class Trade {
         const [inputAmount] = pair.getInputAmount(tokenAmounts[i])
         tokenAmounts[i - 1] = inputAmount
       }
-      this.inputAmount = CurrencyAmount.fromFractionalAmount(
-        route.input,
-        tokenAmounts[0].numerator,
-        tokenAmounts[0].denominator
-      )
-      this.outputAmount = CurrencyAmount.fromFractionalAmount(route.output, amount.numerator, amount.denominator)
     }
+    this.route = route
+    this.tradeType = tradeType
+    this.inputAmount =
+      tradeType === TradeType.EXACT_INPUT
+        ? amount
+        : route.input === ETHER
+        ? CurrencyAmount.ether(tokenAmounts[0].raw)
+        : tokenAmounts[0]
+    this.outputAmount =
+      tradeType === TradeType.EXACT_OUTPUT
+        ? amount
+        : route.output === ETHER
+        ? CurrencyAmount.ether(tokenAmounts[-1].raw)
+        : tokenAmounts[-1]
     this.executionPrice = new Price(
       this.inputAmount.currency,
       this.outputAmount.currency,
@@ -193,7 +192,9 @@ export class Trade {
         .add(slippageTolerance)
         .invert()
         .multiply(this.outputAmount.raw).quotient
-      return CurrencyAmount.fromRawAmount(this.outputAmount.currency, slippageAdjustedAmountOut)
+      return this.outputAmount instanceof TokenAmount
+        ? TokenAmount.fromRawAmount(this.outputAmount.token, slippageAdjustedAmountOut)
+        : CurrencyAmount.fromRawAmount(this.outputAmount.currency, slippageAdjustedAmountOut)
     }
   }
 
@@ -207,7 +208,9 @@ export class Trade {
       return this.inputAmount
     } else {
       const slippageAdjustedAmountIn = new Fraction(ONE).add(slippageTolerance).multiply(this.inputAmount.raw).quotient
-      return CurrencyAmount.fromRawAmount(this.inputAmount.currency, slippageAdjustedAmountIn)
+      return this.inputAmount instanceof TokenAmount
+        ? TokenAmount.fromRawAmount(this.inputAmount.token, slippageAdjustedAmountIn)
+        : CurrencyAmount.fromRawAmount(this.inputAmount.currency, slippageAdjustedAmountIn)
     }
   }
 
@@ -366,7 +369,7 @@ export class Trade {
         throw error
       }
       // we have arrived at the input token, so this is the first trade of one of the paths
-      if (amountIn.currency.equals(tokenIn)) {
+      if (amountIn.token.equals(tokenIn)) {
         sortedInsert(
           bestTrades,
           new Trade(

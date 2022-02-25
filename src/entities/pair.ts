@@ -211,8 +211,8 @@ export class Pair {
     kLast?: BigintIsh
   ): TokenAmount {
     invariant(this.involvesToken(token), 'TOKEN')
-    invariant(totalSupply.currency.equals(this.liquidityToken), 'TOTAL_SUPPLY')
-    invariant(liquidity.currency.equals(this.liquidityToken), 'LIQUIDITY')
+    invariant(totalSupply.token.equals(this.liquidityToken), 'TOTAL_SUPPLY')
+    invariant(liquidity.token.equals(this.liquidityToken), 'LIQUIDITY')
     invariant(JSBI.lessThanOrEqual(liquidity.raw, totalSupply.raw), 'LIQUIDITY')
 
     let totalSupplyAdjusted: TokenAmount

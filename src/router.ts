@@ -97,13 +97,13 @@ export abstract class Router {
     switch (trade.tradeType) {
       case TradeType.EXACT_INPUT:
         if (etherIn) {
-          methodName = useFeeOnTransfer ? 'swapExactETHForTokensSupportingFeeOnTransferTokens' : 'swapTRXForExactTokens'
+          methodName = useFeeOnTransfer ? 'swapExactTRXForTokensSupportingFeeOnTransferTokens' : 'swapTRXForExactTokens'
           // (uint amountOutMin, address[] calldata path, address to, uint deadline)
           args = [amountOut, path, to, deadline]
           value = amountIn
         } else if (etherOut) {
           methodName = useFeeOnTransfer
-            ? 'swapExactTokensForETHSupportingFeeOnTransferTokens'
+            ? 'swapExactTokensForTRXSupportingFeeOnTransferTokens'
             : 'swapExactTokensForTokens'
           // (uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline)
           args = [amountIn, amountOut, path, to, deadline]

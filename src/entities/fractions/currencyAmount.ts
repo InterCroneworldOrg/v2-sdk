@@ -5,7 +5,7 @@ import { Fraction } from './fraction'
 import _Big from 'big.js'
 
 import toFormat from 'toformat'
-import { BigintIsh, Rounding, MaxUint256 } from '../../constants'
+import { BigintIsh, Rounding, MaxUint256, TEN } from '../../constants'
 
 const Big = toFormat(_Big)
 
@@ -18,7 +18,7 @@ export class CurrencyAmount extends Fraction {
   }
 
   static ether(amount: BigintIsh): CurrencyAmount {
-    return new CurrencyAmount(ETHER, amount)
+    return CurrencyAmount.fromRawAmount(ETHER, amount)
   }
 
   /**
@@ -27,7 +27,7 @@ export class CurrencyAmount extends Fraction {
    * @param rawAmount the raw token or ether amount
    */
   public static fromRawAmount(currency: Currency, rawAmount: BigintIsh): CurrencyAmount {
-    return new CurrencyAmount(currency, rawAmount)
+    return new CurrencyAmount(currency, rawAmount, JSBI.exponentiate(TEN, JSBI.BigInt(currency.decimals)))
   }
 
   /**

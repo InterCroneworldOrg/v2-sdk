@@ -3,7 +3,7 @@ import invariant from 'tiny-invariant'
 import { Fraction } from './fraction'
 import { CurrencyAmount } from './currencyAmount'
 import { Token } from '../token'
-import { BigintIsh } from '../../constants'
+import { BigintIsh, TEN } from '../../constants'
 
 export class TokenAmount extends CurrencyAmount {
   public readonly token: Token
@@ -39,7 +39,7 @@ export class TokenAmount extends CurrencyAmount {
    * @param rawAmount the numerator of the fractional token amount
    */
   public static fromRawAmount(token: Token, rawAmount: BigintIsh): TokenAmount {
-    return new TokenAmount(token, rawAmount)
+    return new TokenAmount(token, rawAmount, JSBI.exponentiate(TEN, JSBI.BigInt(token.decimals)))
   }
 
   /**
