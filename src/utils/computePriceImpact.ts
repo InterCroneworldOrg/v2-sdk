@@ -1,4 +1,6 @@
-import { CurrencyAmount, Percent, Price } from '../entities'
+import { CurrencyAmount } from '../entities/fractions/currencyAmount'
+import { Percent } from '../entities/fractions/percent'
+import { Price } from '../entities/fractions/price'
 
 /**
  * Returns the percent difference between the mid price and the execution price, i.e. price impact.

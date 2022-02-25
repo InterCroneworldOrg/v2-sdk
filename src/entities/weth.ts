@@ -1,4 +1,4 @@
-import { Token } from 'entities'
+import { Token } from './token'
 import { ChainId } from '../constants'
 
 export const WETH: { [chainId: number]: Token } = {
