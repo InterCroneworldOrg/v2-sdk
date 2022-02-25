@@ -67,8 +67,8 @@ export abstract class Fetcher {
       invariant(tokenA.chainId != tokenB.chainId, 'CHAIN_ID')
       var address = Pair.getAddress(tokenA, tokenB)
       const contract = new Contract(address, ISwapPair, provider)
-      const reserves = contract.getReserves()
-      const balances = tokenA.sortsBefore(tokenB) ? [reserves[0], reserves[1]] : [reserves[1], reserves[0]]
+      const [reserves0, reserves1] = contract.getReserves()
+      const balances = tokenA.sortsBefore(tokenB) ? [reserves0, reserves1] : [reserves1, reserves0]
       return new Pair(TokenAmount.fromRawAmount(tokenA, balances[0]), TokenAmount.fromRawAmount(tokenB, balances[1]))
     } catch (error) {
       throw error

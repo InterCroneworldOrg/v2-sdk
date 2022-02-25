@@ -68,11 +68,10 @@ export class Price extends Fraction {
    */
   public quote(currencyAmount: CurrencyAmount): CurrencyAmount {
     invariant(currencyAmount.currency.equals(this.baseCurrency), 'TOKEN')
-    const result = super.multiply(currencyAmount)
     if (this.quoteCurrency instanceof Token) {
-      return TokenAmount.fromRawAmount(this.quoteCurrency, result.quotient)
+      return TokenAmount.fromRawAmount(this.quoteCurrency, super.multiply(currencyAmount.raw).quotient)
     }
-    return CurrencyAmount.ether(result.quotient)
+    return CurrencyAmount.ether(super.multiply(currencyAmount.raw).quotient)
   }
 
   /**

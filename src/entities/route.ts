@@ -28,7 +28,8 @@ export class Route {
     const wrappedInput = WETH[pairs[0].chainId]
     invariant(
       typeof output === 'undefined' ||
-        (output instanceof Token && pairs[pairs.length - 1].involvesToken(WETH[pairs[0].chainId])),
+        (output instanceof Token && pairs[pairs.length - 1].involvesToken(output)) ||
+        (output === ETHER && pairs[pairs.length - 1].involvesToken(WETH[pairs[0].chainId])),
       'OUTPUT'
     )
 
@@ -43,7 +44,7 @@ export class Route {
     this.pairs = pairs
     this.path = path
     this.input = input
-    this.output = output !== undefined ? output : path[path.length - 1]
+    this.output = output ?? path[path.length - 1]
   }
 
   private _midPrice: Price | null = null
