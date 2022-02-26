@@ -19,8 +19,8 @@ describe('Price', () => {
     })
     it('object format works', () => {
       const price = new Price({
-        baseAmount: CurrencyAmount.fromRawAmount(t0, 1),
-        quoteAmount: CurrencyAmount.fromRawAmount(t1, 54321)
+        baseAmount: new CurrencyAmount(t0, 1),
+        quoteAmount: new CurrencyAmount(t1, 54321)
       })
       expect(price.toSignificant(5)).toEqual('54321')
       expect(price.baseCurrency.equals(t0))
@@ -31,7 +31,7 @@ describe('Price', () => {
   describe('#quote', () => {
     it('returns correct value', () => {
       const price = new Price(t0, t1, 1, 5)
-      expect(price.quote(CurrencyAmount.fromRawAmount(t0, 10))).toEqual(CurrencyAmount.fromRawAmount(t1, 50))
+      expect(price.quote(new CurrencyAmount(t0, 10))).toEqual(new CurrencyAmount(t1, 50))
     })
   })
 
