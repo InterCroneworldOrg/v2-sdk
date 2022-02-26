@@ -1,5 +1,8 @@
 import invariant from 'tiny-invariant'
-import { Token, Currency, ETHER, WETH, Price } from 'entities'
+import { Token } from './token'
+import { Currency, ETHER } from './currency'
+import { WETH } from './weth'
+import { Price } from './fractions/price'
 
 import { Pair } from './pair'
 
@@ -25,7 +28,8 @@ export class Route {
     const wrappedInput = WETH[pairs[0].chainId]
     invariant(
       typeof output === 'undefined' ||
-        (output instanceof Token && pairs[pairs.length - 1].involvesToken(WETH[pairs[0].chainId])),
+        (output instanceof Token && pairs[pairs.length - 1].involvesToken(output)) ||
+        (output === ETHER && pairs[pairs.length - 1].involvesToken(WETH[pairs[0].chainId])),
       'OUTPUT'
     )
 
@@ -40,7 +44,7 @@ export class Route {
     this.pairs = pairs
     this.path = path
     this.input = input
-    this.output = output !== undefined ? output : path[path.length - 1]
+    this.output = output ?? path[path.length - 1]
   }
 
   private _midPrice: Price | null = null
@@ -51,8 +55,8 @@ export class Route {
     for (const [i, pair] of this.pairs.entries()) {
       prices.push(
         this.path[i].equals(pair.token0)
-          ? new Price(pair.reserve0.currency, pair.reserve1.currency, pair.reserve0.quotient, pair.reserve1.quotient)
-          : new Price(pair.reserve1.currency, pair.reserve0.currency, pair.reserve1.quotient, pair.reserve0.quotient)
+          ? new Price(pair.reserve0.currency, pair.reserve1.currency, pair.reserve0.raw, pair.reserve1.raw)
+          : new Price(pair.reserve1.currency, pair.reserve0.currency, pair.reserve1.raw, pair.reserve0.raw)
       )
     }
     const reduced = prices.slice(1).reduce((accumulator, currentValue) => accumulator.multiply(currentValue), prices[0])

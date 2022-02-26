@@ -22,4 +22,5 @@ export class Currency {
   }
 }
 
-export const ETHER = Currency.ETHER
+const ETHER = Currency.ETHER
+export { ETHER }

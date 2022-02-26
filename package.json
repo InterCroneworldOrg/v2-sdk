@@ -1,7 +1,7 @@
 {
   "name": "@intercroneswap/v2-sdk",
   "license": "MIT",
-  "version": "0.0.3",
+  "version": "0.0.4-trx-stable",
   "description": "🛠 An SDK for building applications on top of Intercroneswap V2",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -26,10 +26,12 @@
     "@ethersproject/solidity": "^5.0.0",
     "@ethersproject/providers": "^5.0.0",
     "@ethersproject/contracts": "^5.0.0",
+    "@intercroneswap/v2-periphery": "^0.1.1",
     "decimal.js-light": "^2.5.0",
     "jsbi": "^3.1.4",
     "tiny-invariant": "^1.1.0",
-    "tiny-warning": "^1.0.3"
+    "tiny-warning": "^1.0.3",
+    "toformat": "^2.0.0"
   },
   "devDependencies": {
     "@types/big.js": "^4.0.5",
