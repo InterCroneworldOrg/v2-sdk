@@ -69,7 +69,7 @@ export class Price extends Fraction {
   public quote(currencyAmount: CurrencyAmount): CurrencyAmount {
     invariant(currencyAmount.currency.equals(this.baseCurrency), 'TOKEN')
     if (this.quoteCurrency instanceof Token) {
-      return TokenAmount.fromRawAmount(this.quoteCurrency, super.multiply(currencyAmount.raw).quotient)
+      return new TokenAmount(this.quoteCurrency, super.multiply(currencyAmount.raw).quotient)
     }
     return CurrencyAmount.ether(super.multiply(currencyAmount.raw).quotient)
   }

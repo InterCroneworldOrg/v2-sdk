@@ -69,7 +69,7 @@ export abstract class Fetcher {
       const contract = new Contract(address, ISwapPair, provider)
       const [reserves0, reserves1] = contract.getReserves()
       const balances = tokenA.sortsBefore(tokenB) ? [reserves0, reserves1] : [reserves1, reserves0]
-      return new Pair(TokenAmount.fromRawAmount(tokenA, balances[0]), TokenAmount.fromRawAmount(tokenB, balances[1]))
+      return new Pair(new TokenAmount(tokenA, balances[0]), new TokenAmount(tokenB, balances[1]))
     } catch (error) {
       throw error
     }

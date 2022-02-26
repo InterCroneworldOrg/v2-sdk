@@ -78,7 +78,7 @@ export interface BestTradeOptions {
  */
 function wrappedAmount(currencyAmount: CurrencyAmount, chainId: ChainId): TokenAmount {
   if (currencyAmount instanceof TokenAmount) return currencyAmount
-  if (currencyAmount.currency === ETHER) return TokenAmount.fromRawAmount(WETH[chainId], currencyAmount.raw)
+  if (currencyAmount.currency === ETHER) return new TokenAmount(WETH[chainId], currencyAmount.raw)
   invariant(false, 'CURRENCY')
 }
 
@@ -202,7 +202,7 @@ export class Trade {
         .invert()
         .multiply(this.outputAmount.raw).quotient
       return this.outputAmount instanceof TokenAmount
-        ? TokenAmount.fromRawAmount(this.outputAmount.token, slippageAdjustedAmountOut)
+        ? new TokenAmount(this.outputAmount.token, slippageAdjustedAmountOut)
         : CurrencyAmount.ether(slippageAdjustedAmountOut)
     }
   }
@@ -218,7 +218,7 @@ export class Trade {
     } else {
       const slippageAdjustedAmountIn = new Fraction(ONE).add(slippageTolerance).multiply(this.inputAmount.raw).quotient
       return this.inputAmount instanceof TokenAmount
-        ? TokenAmount.fromRawAmount(this.inputAmount.token, slippageAdjustedAmountIn)
+        ? new TokenAmount(this.inputAmount.token, slippageAdjustedAmountIn)
         : CurrencyAmount.ether(slippageAdjustedAmountIn)
     }
   }
