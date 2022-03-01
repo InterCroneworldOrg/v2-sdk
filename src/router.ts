@@ -102,9 +102,7 @@ export abstract class Router {
           args = [amountOut, path, to, deadline]
           value = amountIn
         } else if (etherOut) {
-          methodName = useFeeOnTransfer
-            ? 'swapExactTokensForTRXSupportingFeeOnTransferTokens'
-            : 'swapExactTokensForTokens'
+          methodName = useFeeOnTransfer ? 'swapExactTokensForTRXSupportingFeeOnTransferTokens' : 'swapExactTokensForTRX'
           // (uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline)
           args = [amountIn, amountOut, path, to, deadline]
           value = ZERO_HEX
@@ -125,7 +123,7 @@ export abstract class Router {
           args = [amountOut, path, to, deadline]
           value = amountIn
         } else if (etherOut) {
-          methodName = 'swapTokensForExactTokens'
+          methodName = 'swapTokensForExactTRX'
           // (uint amountOut, uint amountInMax, address[] calldata path, address to, uint deadline)
           args = [amountOut, amountIn, path, to, deadline]
           value = ZERO_HEX
